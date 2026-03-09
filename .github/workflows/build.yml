@@ -14,17 +14,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       
-      - name: Build with Gradle
+      - name: Build APK
         run: |
-          # This finds the gradlew file anywhere in your project
-          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "Error: gradlew file not found anywhere!"
-            exit 1
-          fi
-          echo "Found gradlew at: $GRADLEW_PATH"
-          chmod +x "$GRADLEW_PATH"
-          cd $(dirname "$GRADLEW_PATH")
+          # 1. Find the folder that actually contains 'settings.gradle'
+          PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+)
+          cd $PROJ_DIR
+          
+          # 2. Force create a fresh wrapper so we don't need your 'gradlew' file
+          gradle wrapper
+          chmod +x gradlew
+          
+          # 3. Build the app
           ./gradlew assembleDebug
           
       - name: Upload APK
