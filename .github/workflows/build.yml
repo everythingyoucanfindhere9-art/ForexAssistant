@@ -16,16 +16,17 @@ jobs:
       
       - name: Build APK
         run: |
-          # 1. Find the actual folder containing the Android code
-          PROJ_DIR=$(find . -name "build.gradle" -exec dirname {} \+ | head -n 1)
-          echo "Building in: $PROJ_DIR"
-          cd $PROJ_DIR
+          # Go to the folder where gradlew is hiding
+          cd ForexAssistant/ForexAssistant
           
-          # 2. Use the system's Gradle to build
-          gradle assembleDebug
+          # Give it permission to run
+          chmod +x gradlew
+          
+          # Run the build using the local wrapper
+          ./gradlew assembleDebug
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ForexAssistant-APK
-          path: "**/build/outputs/apk/debug/app-debug.apk"
+          path: ForexAssistant/ForexAssistant/app/build/outputs/apk/debug/app-debug.apk
