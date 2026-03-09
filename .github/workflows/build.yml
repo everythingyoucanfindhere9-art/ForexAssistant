@@ -13,20 +13,19 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      
-      - name: Build APK
+
+      - name: Unzip and Build
         run: |
-          # 1. This finds the folder that has the actual app code
-          APP_DIR=$(find . -name "build.gradle" -not -path "*/.*" | head -n 1 | xargs dirname)
-          echo "Found code in: $APP_DIR"
-          cd $APP_DIR
+          # 1. Force unzip everything in case it's still zipped
+          find . -name "*.zip" -exec unzip -o {} \;
           
-          # 2. Check for gradlew, if missing, create it
-          if [ ! -f "gradlew" ]; then
-            gradle wrapper
-          fi
+          # 2. Find where the Android project actually is
+          PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+ | head -n 1)
+          echo "Project found in: $PROJ_DIR"
+          cd $PROJ_DIR
           
-          # 3. Build the app
+          # 3. Create the builder and run it
+          gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
           
