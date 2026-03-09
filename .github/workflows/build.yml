@@ -14,17 +14,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Unzip and Build
+      - name: Force Build
         run: |
-          # 1. Force unzip everything in case it's still zipped
-          find . -name "*.zip" -exec unzip -o {} \;
-          
-          # 2. Find where the Android project actually is
+          # 1. Find the REAL root folder of your Android app
           PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+ | head -n 1)
-          echo "Project found in: $PROJ_DIR"
-          cd $PROJ_DIR
           
-          # 3. Create the builder and run it
+          if [ -z "$PROJ_DIR" ]; then
+            echo "STILL NOT FOUND - checking for zip files..."
+            find . -name "*.zip" -exec unzip -o {} \;
+            PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+ | head -n 1)
+          fi
+          
+          echo "Project located in: $PROJ_DIR"
+          cd "$PROJ_DIR"
+          
+          # 2. Build the "engine" from scratch
           gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
