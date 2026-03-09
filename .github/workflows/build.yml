@@ -14,23 +14,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Force Build
+      - name: Ultimate Build
         run: |
-          # 1. Find the REAL root folder of your Android app
+          # 1. Force unzip any archive found in the repo
+          find . -name "*.zip" -exec unzip -o {} \;
+          
+          # 2. Find the folder that has 'build.gradle' (the actual app)
+          # We skip any 'build.gradle' found in the root and look for the 'app' one
           PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+ | head -n 1)
-          
-          if [ -z "$PROJ_DIR" ]; then
-            echo "STILL NOT FOUND - checking for zip files..."
-            find . -name "*.zip" -exec unzip -o {} \;
-            PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+ | head -n 1)
-          fi
-          
-          echo "Project located in: $PROJ_DIR"
+          echo "Building from: $PROJ_DIR"
           cd "$PROJ_DIR"
           
-          # 2. Build the "engine" from scratch
+          # 3. Create a fresh builder (gradlew) on the fly
           gradle wrapper
           chmod +x gradlew
+          
+          # 4. Build the Debug APK
           ./gradlew assembleDebug
           
       - name: Upload APK
