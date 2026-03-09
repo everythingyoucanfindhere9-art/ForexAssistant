@@ -1,10 +1,29 @@
-      - name: Build Debug APK
+name: Build APK
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Find and Build
         run: |
-          cd ForexAssistant/ForexAssistant
+          # This command finds the gradlew file no matter where it is
+          GRADLEW_PATH=$(find . -name gradlew)
+          GRADLE_DIR=$(dirname $GRADLEW_PATH)
+          cd $GRADLE_DIR
           chmod +x gradlew
           ./gradlew assembleDebug
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ForexAssistant-APK
-          path: ForexAssistant/ForexAssistant/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/build/outputs/apk/debug/app-debug.apk"
