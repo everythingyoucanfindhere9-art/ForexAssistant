@@ -7,19 +7,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
       
-      - name: Find and Build
+      - name: Build with Gradle
         run: |
-          # This command finds the gradlew file no matter where it is
-          GRADLEW_PATH=$(find . -name gradlew)
-          GRADLE_DIR=$(dirname $GRADLEW_PATH)
-          cd $GRADLE_DIR
-          chmod +x gradlew
+          # This automatically finds your project folder and starts the build
+          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
+          if [ -z "$GRADLEW_PATH" ]; then echo "Gradlew not found"; exit 1; fi
+          chmod +x "$GRADLEW_PATH"
+          cd $(dirname "$GRADLEW_PATH")
           ./gradlew assembleDebug
           
       - name: Upload APK
