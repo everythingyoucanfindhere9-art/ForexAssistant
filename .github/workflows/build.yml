@@ -16,16 +16,11 @@ jobs:
       
       - name: Build APK
         run: |
-          # 1. Find the folder that actually contains 'settings.gradle'
-          PROJ_DIR=$(find . -name "settings.gradle" -exec dirname {} \+)
-          cd $PROJ_DIR
+          # Go directly to where the build file is
+          cd ForexAssistant/ForexAssistant
           
-          # 2. Force create a fresh wrapper so we don't need your 'gradlew' file
-          gradle wrapper
-          chmod +x gradlew
-          
-          # 3. Build the app
-          ./gradlew assembleDebug
+          # Use the pre-installed Gradle on the server instead of the wrapper
+          gradle assembleDebug
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
