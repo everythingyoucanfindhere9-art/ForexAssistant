@@ -16,15 +16,13 @@ jobs:
       
       - name: Build with Gradle
         run: |
-          # This automatically finds your project folder and starts the build
-          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then echo "Gradlew not found"; exit 1; fi
-          chmod +x "$GRADLEW_PATH"
-          cd $(dirname "$GRADLEW_PATH")
+          # We are going specifically into the inner folder where the real app code is
+          cd ForexAssistant/ForexAssistant
+          chmod +x gradlew
           ./gradlew assembleDebug
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ForexAssistant-APK
-          path: "**/build/outputs/apk/debug/app-debug.apk"
+          path: "ForexAssistant/ForexAssistant/app/build/outputs/apk/debug/app-debug.apk"
