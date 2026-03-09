@@ -16,10 +16,12 @@ jobs:
       
       - name: Build APK
         run: |
-          # Go directly to where the build file is
-          cd ForexAssistant/ForexAssistant
+          # 1. Find the actual folder containing the Android code
+          PROJ_DIR=$(find . -name "build.gradle" -exec dirname {} \+ | head -n 1)
+          echo "Building in: $PROJ_DIR"
+          cd $PROJ_DIR
           
-          # Use the pre-installed Gradle on the server instead of the wrapper
+          # 2. Use the system's Gradle to build
           gradle assembleDebug
           
       - name: Upload APK
