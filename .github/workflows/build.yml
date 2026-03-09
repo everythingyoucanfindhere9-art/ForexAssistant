@@ -16,17 +16,22 @@ jobs:
       
       - name: Build APK
         run: |
-          # Go to the folder where gradlew is hiding
-          cd ForexAssistant/ForexAssistant
+          # 1. This finds the folder that has the actual app code
+          APP_DIR=$(find . -name "build.gradle" -not -path "*/.*" | head -n 1 | xargs dirname)
+          echo "Found code in: $APP_DIR"
+          cd $APP_DIR
           
-          # Give it permission to run
+          # 2. Check for gradlew, if missing, create it
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper
+          fi
+          
+          # 3. Build the app
           chmod +x gradlew
-          
-          # Run the build using the local wrapper
           ./gradlew assembleDebug
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ForexAssistant-APK
-          path: ForexAssistant/ForexAssistant/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/build/outputs/apk/debug/app-debug.apk"
