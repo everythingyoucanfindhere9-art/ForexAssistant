@@ -1,23 +1,10 @@
-name: Build APK
-on:
-  push:
-    branches: [ main ]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Unzip project
-        run: unzip ForexAssistant_Gemini.zip
       - name: Build Debug APK
-        run: cd ForexAssistant && chmod +x gradlew && ./gradlew assembleDebug
+        run: |
+          cd ForexAssistant/ForexAssistant
+          chmod +x gradlew
+          ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ForexAssistant-APK
-          path: ForexAssistant/app/build/outputs/apk/debug/app-debug.apk
+          path: ForexAssistant/ForexAssistant/app/build/outputs/apk/debug/app-debug.apk
